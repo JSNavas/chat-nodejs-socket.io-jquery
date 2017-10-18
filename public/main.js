@@ -1,44 +1,41 @@
-// se envia la respuesta 'connection' a io.on que se estableció una conexion
-var socket = io.connect();
+// ES6
+const socket = io.connect()
 
-$(document).ready(function(){
-	socket.on('mensajes', render);
+$(document).ready(() => {
+	socket.on('mensajes', render)
+	$('#enviar').click(sendMsj)
+})
 
-	$("#enviar").click(enviarMensaje);
-});
+const render = (data) => {
+	const html = data.map((data, index) => {
+		return(`
+			<div class="mensaje">
+				<strong>${data.usuario}</strong>
+				<p>${data.mensaje}</p>
+			</div>
+		`)
+	}).join('')
+	const divChat = document.getElementById('chat')
+	divChat.innerHTML = html
+	divChat.scrollTop = divChat.scrollHeight
 
-function render(datos){
-	var html = datos.map(function(data, index){
-		return (`<div class="mensaje">
-					<strong>${data.usuario}</strong>
-					<p>${data.mensaje}</p>
-				</div>`);
-	}).join(" ");
-
-	var divChat = document.getElementById('chat');
-	divChat.innerHTML = html;
-	divChat.scrollTop = divChat.scrollHeight;
-
-	// se limpian los inputs
-	$("#mensaje").val("");
+	$('#mensaje').val('')
 }
 
-var enviarMensaje = function(){
-	var usuario = document.getElementById('usuario').value;
-	var mensaje = document.getElementById('mensaje').value;
+const sendMsj = () => {
+	const user = $('#usuario').val()
+	const msj = $('#mensaje').val()
 
-	if(usuario != "" && mensaje != ""){
-		var datos = {
-			usuario: usuario,
-			mensaje: mensaje
-		};
+	if (user != '' && msj != '') {
+		let data = {
+			usuario: user,
+			mensaje: msj
+		}
 
-		// se emite el evento nuevoMensaje
-		socket.emit('nuevoMensaje', datos);
+	socket.emit('nuevoMensaje', data)
 
-		return false;
-	}else{
-		alert('Los campos no pueden estar vacios!');
+	return false
+	} else {
+		alert('Los campos no pueden estar vacios!')
 	}
-
 }
